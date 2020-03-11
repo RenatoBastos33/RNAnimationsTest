@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, TouchableWithoutFeedback, TouchableOpacity, SafeAreaView, Dimensions, Image, Animated, ScrollView, StyleSheet, BackHandler } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, TouchableOpacity, SafeAreaView, Dimensions, Image, Animated, ScrollView, StyleSheet, BackHandler, ListView, FlatList } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator, useHeaderHeight, CardStyleInterpolators, HeaderBackButton } from '@react-navigation/stack';
 import { TransitionPresets } from '@react-navigation/stack';
@@ -142,19 +142,53 @@ function HomeScreen({ route }) {
 }
 
 function SettingsScreen() {
-
   const navigation = useNavigation()
-  const [imagePosition, setImagePosition] = React.useState()
-  const image = require('./restaurant.jpg')
-  const clickImage = () => {
-    navigation.navigate('Descricao', { imagePosition, image })
+  const [flatListPosition, setFlatListPosition] = React.useState()
+  const [offsetScrollFlat, setoffsetScrollFlat] = React.useState(0)
+  const [offsetScroll, setoffsetScroll] = React.useState(0)
+
+
+  const images = [require('./restaurant.jpg'), require('./restaurant2.jpg'), require('./restaurant3.jpg')]
+  const clickImage = (index) => {
+    const imagePosition = { height: 100, width: 200, y: 60 + flatListPosition.y - offsetScroll, x: ((20 * (index) + 200 * index) - offsetScrollFlat) }
+    navigation.navigate('Descricao', { imagePosition, image: images[index] })
   }
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <TouchableWithoutFeedback style={{ backgroundColor: 'green' }} onPress={() => clickImage()}>
-        <Image onLayout={({ nativeEvent }) => setImagePosition(nativeEvent.layout)} style={{ width: 200, height: 100, backgroundColor: 'red' }} source={image} resizeMode={'cover'} />
-      </TouchableWithoutFeedback>
-    </View>
+      <ScrollView
+        onScroll={(event) => setoffsetScroll(event.nativeEvent.contentOffset.y)}
+        onLayout={({ nativeEvent }) => console.log(nativeEvent.layout)}
+        style={{ marginTop: 60 }}>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <FlatList
+          onScroll={(event) => setoffsetScrollFlat(event.nativeEvent.contentOffset.x)}
+          onLayout={({ nativeEvent }) => setFlatListPosition(nativeEvent.layout)}
+          contentContainerStyle={{ alignItems: 'center', }}
+          horizontal={true}
+          data={images}
+          keyExtractor={(item, index) => index + ''}
+          renderItem={({ item, index }) => (
+            <View key={index} style={{ marginRight: 20 }}>
+              <TouchableWithoutFeedback onPress={() => clickImage(index)}>
+                <Image style={{ width: 200, height: 100 }} source={item} resizeMode={'cover'} />
+              </TouchableWithoutFeedback>
+            </View>
+          )}
+        />
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+        <Text style={{ marginBottom: 50 }}>SCROLL VIEW!</Text>
+      </ScrollView>
+    </View >
   );
 }
 const Stack = createStackNavigator()
